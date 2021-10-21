@@ -1,20 +1,17 @@
 /*
- * Simple demo, should work with any driver board
- *
- * Connect STEP, DIR as indicated
- *
- * Copyright (C)2015-2017 Laurentiu Badea
- *
- * This file may be redistributed under the terms of the MIT license.
- * A copy of this license has been included with this distribution in the file LICENSE.
- */
+   Code adapted from BasicStepperDriver example from the StepperDriver library. Copyright (C)2015-2017 Laurentiu Badea
+   Simple demo, should work with any driver board
+   Connect STEP, DIR as indicated
+   This file may be redistributed under the terms of the MIT license.
+   A copy of this license has been included with this distribution in the file LICENSE.
+
+*/
 #include <Arduino.h>
 #include "BasicStepperDriver.h"
 
 // Motor steps per revolution. Most steppers are 200 steps or 1.8 degrees/step
 #define MOTOR_STEPS 200
-#define RPM 12
-
+#define RPM 10
 // Since microstepping is set externally, make sure this matches the selected mode
 // If it doesn't, the motor will move at a different RPM than chosen
 // 1=full step, 2=half step etc.
@@ -33,35 +30,29 @@ BasicStepperDriver stepper(MOTOR_STEPS, DIR, STEP);
 //BasicStepperDriver stepper(MOTOR_STEPS, DIR, STEP, SLEEP);
 
 long steps;
+bool fullRotation;
 
 void setup() {
   Serial.begin(9600);
-    stepper.begin(RPM, MICROSTEPS);
-    // if using enable/disable on ENABLE pin (active LOW) instead of SLEEP uncomment next line
-    // stepper.setEnableActiveState(LOW);
+  stepper.begin(RPM, MICROSTEPS);
+  // if using enable/disable on ENABLE pin (active LOW) instead of SLEEP uncomment next line
+  // stepper.setEnableActiveState(LOW);
 }
 
 void loop() {
-  
-    // energize coils - the motor will hold position
-    // stepper.enable();
-      if (Serial.available()) {
-    steps = Serial.parseInt();
-    Serial.println(steps);
-    stepper.rotate(steps);
+
+  // energize coils - the motor will hold position
+  // stepper.enable();
+  stepsMove(fullRotation=false);
 }
-  
-    /*
-     * Moving motor one full revolution using the degree notation
-     */
-    //stepper.rotate(360);
 
-    /*
-     * Moving motor to original position using steps
-     */
-    //stepper.move(-MOTOR_STEPS*MICROSTEPS);
-
-    // pause and allow the motor to be moved by hand
-    // stepper.disable();
-
+void stepsMove(bool fullRotation) {
+  if (Serial.available()) {
+    steps = Serial.parseInt();
+    if (fullRotation == true) {
+      steps = steps * MICROSTEPS * MOTOR_STEPS;
+    }
+    Serial.println(steps);
+    stepper.move(steps);
+  }
 }

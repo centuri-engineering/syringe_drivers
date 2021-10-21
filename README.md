@@ -1,4 +1,4 @@
-# Comparison and and code for open source syringe drivers
+# Comparison and code for 3d printed syringe drivers.
 Different 3D printed syringe drivers are tested in this repository.
 ## With nema17 stepper motors
 More details in [this folder](a4988-drivers_nema17/).
